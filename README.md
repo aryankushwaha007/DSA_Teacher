@@ -31,7 +31,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/DSA_AI.git
+   git clone https://github.com/aryankushwaha007/DSA_Teacher.git
    cd DSA_AI
    ```
 
