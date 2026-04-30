@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coding Mentor AI</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Markdown Parser -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-panel: #1e293b;
+            --bg-active: #334155;
+            --bg-hover: #1e293ba6;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --border: #334155;
+            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            padding: 24px 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            padding: 0 24px 32px 24px;
+        }
+
+        .logo i {
+            color: var(--accent);
+            font-size: 24px;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 0 12px;
+        }
+
+        .nav-item {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-main);
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 40px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header h1 span {
+            color: var(--accent);
+        }
+
+        .profile-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: var(--bg-panel);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-btn:hover {
+            background: var(--bg-active);
+        }
+
+        /* View Containers */
+        .view-container {
+            display: none;
+            padding: 40px;
+            overflow-y: auto;
+            flex: 1;
+            flex-direction: column;
+            gap: 24px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .view-container.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Dash Elements */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .panel {
+            background-color: var(--bg-panel);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 32px 24px;
+            background: var(--bg-main);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-box h2 {
+            font-size: 42px;
+            color: var(--accent);
+            margin: 0 0 8px 0;
+            line-height: 1;
+        }
+
+        .stat-box p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* Interactive Topic List */
+        .topic-list {
+            list-style: none;
+            padding: 0;
+            margin: 16px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .topic-item {
+            background: var(--bg-main);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+            color: var(--text-primary);
+        }
+
+        .topic-item:hover {
+            border-color: var(--accent);
+            transform: scale(1.02);
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .topic-item i.fa-chevron-right {
+            color: var(--text-secondary);
+            transition: transform 0.2s;
+        }
+
+        .topic-item:hover i.fa-chevron-right {
+            transform: translateX(4px);
+            color: var(--accent);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .panel-header i {
+            color: #ef4444;
+            /* Fire icon color */
+        }
+
+        /* Tutorial Grid UI */
+        .tutorial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .tutorial-card {
+            background: var(--bg-panel);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tutorial-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .tutorial-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+            background-color: var(--bg-main);
+        }
+
+        .tutorial-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tutorial-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .tutorial-desc {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .tutorial-badge {
+            align-self: flex-start;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Playground / Chat UI */
+
+        /* History UI */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .history-item {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-q {
+            font-weight: 600;
+            color: var(--accent);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 16px;
+        }
+
+        .history-a {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+            padding-left: 28px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .history-a pre {
+            display: none;
+            /* hide code blocks in preview */
+        }
+
+        .history-resume-btn {
+            align-self: flex-end;
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .history-resume-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: var(--bg-panel);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .chat-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(30, 41, 59, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-header i {
+            color: var(--accent);
+            font-size: 20px;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: var(--bg-main);
+        }
+
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+        }
+
+        .message-wrapper.bot {
+            align-self: flex-start;
+        }
+
+        .message-wrapper.user {
+            align-self: flex-end;
+        }
+
+        .message-sender {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .message-wrapper.user .message-sender {
+            flex-direction: row-reverse;
+        }
+
+        .message {
+            padding: 14px 18px;
+            border-radius: 12px;
+            line-height: 1.6;
+            font-size: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style Markdown inside messages */
+        .message p {
+            margin: 0 0 10px 0;
+        }
+
+        .message p:last-child {
+            margin: 0;
+        }
+
+        .message pre {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+
+        .message code {
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .message pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .message.bot {
+            background-color: var(--bg-panel);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            border-top-left-radius: 4px;
+        }
+
+        .message.user {
+            background-color: var(--accent);
+            color: white;
+            border-top-right-radius: 4px;
+        }
+
+        /* Input Area */
+        .input-area-container {
+            padding: 20px 24px;
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border);
+        }
+
+        .input-area {
+            position: relative;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 6px 6px 6px 16px;
+            transition: border-color 0.2s;
+        }
+
+        .input-area:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .input-area input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            padding: 12px 0;
+        }
+
+        .send-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .send-btn:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: none;
+            padding: 12px 18px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            border-top-left-radius: 4px;
+            align-self: flex-start;
+            flex-direction: row;
+            gap: 4px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        /* Placeholder views for History/Tutorials */
+        .placeholder-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            height: 100%;
+            color: var(--text-secondary);
+        }
+
+        .placeholder-view i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fa-solid fa-robot"></i>
+            Code Mentor AI
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item active" onclick="switchView('dashboard')">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </div>
+            <div class="nav-item" onclick="switchView('playground')">
+                <i class="fa-solid fa-terminal"></i> Playground
+            </div>
+            <div class="nav-item" onclick="switchView('history')">
+                <i class="fa-solid fa-clock-rotate-left"></i> History
+            </div>
+            <div class="nav-item" onclick="switchView('tutorials')">
+                <i class="fa-solid fa-book-open"></i> Tutorials
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Header -->
+        <div class="header">
+            <h1 id="pageTitle">Coding <span>Instructor AI</span></h1>
+            <button class="profile-btn">
+                <i class="fa-solid fa-user"></i> Profile
+            </button>
+        </div>
+
+        <!-- 1. Dashboard View -->
+        <div id="dashboard-view" class="view-container active">
+            <div class="dash-grid">
+                <div class="panel stats-grid">
+                    <div class="stat-box" style="cursor: pointer; padding: 24px 16px;"
+                        onclick="askAboutTopic('Give me a beginner-friendly Daily Coding Challenge to solve right now.')">
+                        <i class="fa-solid fa-laptop-code"
+                            style="color: var(--accent); font-size: 32px; margin-bottom: 16px;"></i>
+                        <h2 style="font-size: 20px; font-weight: 600; margin: 0 0 8px 0; color: var(--text-primary);">
+                            Daily Challenge</h2>
+                        <p>Solve today's active problem</p>
+                    </div>
+                    <div class="stat-box" style="cursor: pointer; padding: 24px 16px;"
+                        onclick="askAboutTopic('Give me a quick 3-question quiz on Time and Space Complexity (Big-O).')">
+                        <i class="fa-solid fa-list-check"
+                            style="color: #10b981; font-size: 32px; margin-bottom: 16px;"></i>
+                        <h2 style="font-size: 20px; font-weight: 600; margin: 0 0 8px 0; color: var(--text-primary);">
+                            Knowledge Quiz</h2>
+                        <p>Test your DSA skills</p>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3 class="panel-header"><i class="fa-solid fa-fire"></i> Popular Topics</h3>
+                    <ul class="topic-list">
+                        <li class="topic-item"
+                            onclick="askAboutTopic('Can you explain Binary Search Tree implementation in Java?')">
+                            <span><i class="fa-brands fa-java" style="margin-right:8px; color: #f89820;"></i> Binary
+                                Search Trees (Java)</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </li>
+                        <li class="topic-item" onclick="askAboutTopic('How do I implement a linked list in Python?')">
+                            <span><i class="fa-brands fa-python" style="margin-right:8px; color: #3776ab;"></i> Linked
+                                Lists (Python)</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </li>
+                        <li class="topic-item" onclick="askAboutTopic('Explain pointers and memory allocation in C')">
+                            <span><i class="fa-solid fa-c" style="margin-right:8px; color: #00599C;"></i> Pointers &
+                                Memory (C)</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </li>
+                        <li class="topic-item"
+                            onclick="askAboutTopic('Explain Graph BFS and DFS differences in Python')">
+                            <span><i class="fa-solid fa-network-wired"
+                                    style="margin-right:8px; color: var(--accent);"></i> Graph Traversals
+                                (Python)</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Welcome panel promoting Playground -->
+            <div class="panel" style="text-align: center; padding: 40px;">
+                <i class="fa-solid fa-lightbulb" style="font-size: 40px; color: #fbbf24; margin-bottom: 16px;"></i>
+                <h2 style="margin:0 0 12px 0;">Ready to learn?</h2>
+                <p style="color: var(--text-secondary); margin:0 0 24px 0;">Head over to the playground to ask your
+                    coding or DSA questions to the AI.</p>
+                <button class="profile-btn"
+                    style="margin: 0 auto; background: var(--accent); color: white; border: none; padding: 12px 24px;"
+                    onclick="switchView('playground')">
+                    Open Playground <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. Playground View (Chat) -->
+        <div id="playground-view" class="view-container" style="padding-bottom: 0;">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <i class="fa-regular fa-message"></i>
+                    <h3>Interactive Coding Session</h3>
+                </div>
+
+                <div class="chat-history" id="chatHistory">
+                    <div class="message-wrapper bot">
+                        <div class="message-sender"><i class="fa-solid fa-robot"></i> AI Mentor</div>
+                        <div class="message bot" id="welcomeMessage"></div>
+                    </div>
+                </div>
+
+                <div class="chat-history" style="flex: unset; padding: 0 24px;">
+                    <div class="typing-indicator" id="typingIndicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+
+                <div class="input-area-container">
+                    <div class="input-area">
+                        <i class="fa-solid fa-terminal" style="color: var(--text-secondary);"></i>
+                        <input type="text" id="userInput" placeholder="Ask your data structures or coding question..."
+                            onkeypress="handleKeyPress(event)" />
+                        <button class="send-btn" onclick="sendInput()">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. History View -->
+        <div id="history-view" class="view-container">
+            <div class="header"
+                style="position: static; padding: 0 0 24px 0; background: none; border: none; backdrop-filter: none;">
+                <h1 style="font-size: 28px;">Session <span style="color: var(--accent);">History</span></h1>
+                <p style="color: var(--text-secondary); margin-top: 8px;">Review your questions and AI responses from
+                    this learning session.</p>
+            </div>
+
+            <div class="history-list" id="realHistoryList">
+                <div class="panel placeholder-view" id="emptyHistoryPlaceholder"
+                    style="margin-top: 40px; padding: 60px;">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <h2>No Chat History Yet</h2>
+                    <p style="margin-top:8px;">Ask a question in the <a style="color:var(--accent); cursor:pointer;"
+                            onclick="switchView('playground')">Playground</a> to see it appear here.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Tutorials View -->
+        <div id="tutorials-view" class="view-container">
+            <div class="header"
+                style="position: static; padding: 0 0 24px 0; background: none; border: none; backdrop-filter: none;">
+                <h1 style="font-size: 28px;">Learning <span style="color: var(--accent);">Tutorials</span></h1>
+                <p style="color: var(--text-secondary); margin-top: 8px;">Explore structured guides covering essential
+                    Data Structures and Algorithms.</p>
+            </div>
+
+            <div class="tutorial-grid">
+                <!-- Arrays -->
+                <div class="tutorial-card" onclick="askAboutTopic('Teach me Arrays and Strings from scratch')">
+                    <img src="https://placehold.co/600x300/1e293b/38bdf8?text=Arrays+%26+Strings&font=Inter"
+                        class="tutorial-img" alt="Arrays">
+                    <div class="tutorial-content">
+                        <span class="tutorial-badge">Fundamentals</span>
+                        <h3 class="tutorial-title">Arrays & Strings</h3>
+                        <p class="tutorial-desc">Master memory layout, indexing, and the two-pointer technique.</p>
+                    </div>
+                </div>
+
+                <!-- Linked Lists -->
+                <div class="tutorial-card" onclick="askAboutTopic('Teach me Linked Lists from scratch')">
+                    <img src="https://placehold.co/600x300/1e293b/a855f7?text=Linked+Lists&font=Inter"
+                        class="tutorial-img" alt="Linked Lists">
+                    <div class="tutorial-content">
+                        <span class="tutorial-badge">Data Structures</span>
+                        <h3 class="tutorial-title">Linked Lists</h3>
+                        <p class="tutorial-desc">Learn about nodes, pointers, and memory manipulation algorithms.</p>
+                    </div>
+                </div>
+
+                <!-- Trees & BST -->
+                <div class="tutorial-card"
+                    onclick="askAboutTopic('Teach me Trees and Binary Search Trees from scratch')">
+                    <img src="https://placehold.co/600x300/1e293b/10b981?text=Trees+%26+BST&font=Inter"
+                        class="tutorial-img" alt="Trees">
+                    <div class="tutorial-content">
+                        <span class="tutorial-badge">Hierarchical</span>
+                        <h3 class="tutorial-title">Trees & BST</h3>
+                        <p class="tutorial-desc">Understand hierarchical data, recursion, and Binary Search Trees.</p>
+                    </div>
+                </div>
+
+                <!-- Graphs -->
+                <div class="tutorial-card" onclick="askAboutTopic('Teach me Graph Algorithms BFS and DFS')">
+                    <img src="https://placehold.co/600x300/1e293b/f59e0b?text=Graph+Algorithms&font=Inter"
+                        class="tutorial-img" alt="Graphs">
+                    <div class="tutorial-content">
+                        <span class="tutorial-badge">Advanced</span>
+                        <h3 class="tutorial-title">Graph Algorithms</h3>
+                        <p class="tutorial-desc">Explore vertices, edges, Breadth-First & Depth-First Searches.</p>
+                    </div>
+                </div>
+
+                <!-- Sorting & Searching -->
+                <div class="tutorial-card" onclick="askAboutTopic('Teach me Sorting and Searching algorithms')">
+                    <img src="https://placehold.co/600x300/1e293b/ef4444?text=Sorting+%26+Searching&font=Inter"
+                        class="tutorial-img" alt="Sorting">
+                    <div class="tutorial-content">
+                        <span class="tutorial-badge">Algorithms</span>
+                        <h3 class="tutorial-title">Sorting & Searching</h3>
+                        <p class="tutorial-desc">Deep dive into Merge Sort, Quick Sort, and Binary Search techniques.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Dynamic Programming -->
+                <div class="tutorial-card" onclick="askAboutTopic('Teach me Dynamic Programming concepts')">
+                    <img src="https://placehold.co/600x300/1e293b/ec4899?text=Dynamic+Programming&font=Inter"
+                        class="tutorial-img" alt="Dynamic Programming">
+                    <div class="tutorial-content">
+                        <span class="tutorial-badge">Optimization</span>
+                        <h3 class="tutorial-title">Dynamic Programming</h3>
+                        <p class="tutorial-desc">Master overlapping subproblems and memoization to optimize runtime.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Set the initial welcome message with markdown
+        document.getElementById('welcomeMessage').innerHTML = marked.parse(
+            "Hello! I'm your **Data Structures and Algorithms** tutor. ✨\n\nI specialize in teaching DSA using **Java, Python, and C**.\n\nPlease tell me which of these three languages you prefer to study in, and what DSA topic or problem you would like to explore today? For example:\n- *Teach me Binary Search Trees in Java*\n- *How do I reverse a Linked List in Python?*\n- *Explain dynamic programming in C*"
+        );
+
+        // Function to switch between views (Dashboard, Playground, History, etc.)
+        function switchView(viewId) {
+            // Update Navigation active state
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            // Find the clicked nav item based on its string contents and add active class
+            let targetNav;
+            document.querySelectorAll('.nav-item').forEach(item => {
+                if (item.textContent.toLowerCase().includes(viewId.toLowerCase())) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Hide all views
+            document.querySelectorAll('.view-container').forEach(view => {
+                view.classList.remove('active');
+            });
+
+            // Show selected view
+            const targetView = document.getElementById(`${viewId}-view`);
+            if (targetView) targetView.classList.add('active');
+
+            // Optionally change the header title
+            const titleMap = {
+                'dashboard': 'Coding <span>Instructor AI</span>',
+                'playground': 'AI <span>Playground</span>',
+                'history': 'Session <span>History</span>',
+                'tutorials': 'Learning <span>Tutorials</span>'
+            };
+            document.getElementById('pageTitle').innerHTML = titleMap[viewId] || 'Coding <span>Instructor AI</span>';
+        }
+
+        // Function invoked when user clicks a popular topic on the Dashboard
+        function askAboutTopic(topicQuery) {
+            switchView('playground');
+            const input = document.getElementById('userInput');
+            input.value = topicQuery;
+            // Optionally, automatically trigger send by calling sendInput()
+            // Using a slight delay makes the UI switch feel smoother before sending
+            setTimeout(() => sendInput(), 300);
+        }
+
+        // Chat Handlers
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendInput();
+            }
+        }
+
+        function sendInput() {
+            const input = document.getElementById('userInput');
+            const text = input.value.trim();
+            if (text) {
+                appendMessage(text, 'user');
+                input.value = '';
+                fetchGeminiResponse(text);
+            }
+        }
+
+        let lastUserQuery = null;
+
+        function appendMessage(text, sender) {
+            const history = document.getElementById('chatHistory');
+
+            const wrapper = document.createElement('div');
+            wrapper.className = `message-wrapper ${sender}`;
+
+            const senderLabel = document.createElement('div');
+            senderLabel.className = 'message-sender';
+            if (sender === 'user') {
+                senderLabel.innerHTML = 'You <i class="fa-solid fa-user" style="color: var(--accent)"></i>';
+                lastUserQuery = text; // save for history view
+            } else {
+                senderLabel.innerHTML = '<i class="fa-solid fa-robot"></i> AI Mentor';
+
+                // If it's a bot answering, add this pair to the history log
+                if (lastUserQuery) {
+                    addHistoryLog(lastUserQuery, text);
+                    lastUserQuery = null;
+                }
+            }
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+
+            // If it's a bot, parse markdown. For user, insert text directly.
+            if (sender === 'bot') {
+                msgDiv.innerHTML = marked.parse(text);
+            } else {
+                msgDiv.textContent = text;
+            }
+
+            wrapper.appendChild(senderLabel);
+            wrapper.appendChild(msgDiv);
+            history.appendChild(wrapper);
+
+            // Scroll to the bottom
+            requestAnimationFrame(() => {
+                history.scrollTop = history.scrollHeight;
+            });
+        }
+
+        function addHistoryLog(query, responseMarkdown) {
+            const emptyPlaceholder = document.getElementById('emptyHistoryPlaceholder');
+            if (emptyPlaceholder) emptyPlaceholder.style.display = 'none';
+
+            const list = document.getElementById('realHistoryList');
+
+            const item = document.createElement('div');
+            item.className = 'history-item';
+
+            const qDiv = document.createElement('div');
+            qDiv.className = 'history-q';
+            qDiv.innerHTML = `<i class="fa-solid fa-square-person-confined"></i> <span>${query}</span>`;
+
+            const aDiv = document.createElement('div');
+            aDiv.className = 'history-a';
+            aDiv.innerHTML = marked.parse(responseMarkdown);
+
+            const btn = document.createElement('button');
+            btn.className = 'history-resume-btn';
+            btn.innerHTML = 'Return to Chat <i class="fa-solid fa-arrow-right"></i>';
+            btn.onclick = () => switchView('playground');
+
+            item.appendChild(qDiv);
+            item.appendChild(aDiv);
+            item.appendChild(btn);
+
+            list.prepend(item); // Put most recent at top
+        }
+
+        async function fetchGeminiResponse(userPrompt) {
+            const typing = document.getElementById('typingIndicator');
+            const history = document.getElementById('chatHistory');
+
+            typing.style.display = 'flex';
+            history.parentElement.scrollTop = history.parentElement.scrollHeight;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userPrompt })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    appendMessage(data.reply, 'bot');
+                } else {
+                    const errorData = await response.json().catch(() => ({}));
+                    appendMessage(`⚠️ Error: ${errorData.error || "Unable to fetch response. Make sure your Express server is running and your API key is valid."}`, 'bot');
+                }
+            } catch (error) {
+                appendMessage("⚠️ Network Error: Unable to reach the local server. Make sure `npm run dev` is still running in the terminal.", 'bot');
+                console.error(error);
+            } finally {
+                typing.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>
