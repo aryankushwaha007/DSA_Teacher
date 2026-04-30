@@ -74,26 +74,3 @@ Follow these instructions to get a copy of the project up and running on your lo
 4. Visit the **History** tab mid-session if you find yourself needing to trace back recent questions or verify an earlier code snippet.
 5. Utilize the **Tutorials** segment to quickly drop into structured learning paths for specific DSA chapters.
 
-## ☁️ Publishing to GitHub
-
-To push this project to your own GitHub repository, run the following commands in your terminal:
-
-1. **Initialize Git (if you haven't already):**
-   ```bash
-   git init
-   ```
-2. **Stage your files:**
-   ```bash
-   git add .
-   ```
-3. **Commit the changes:**
-   ```bash
-   git commit -m "Initial commit: DSA AI Mentor UI and Backend"
-   ```
-4. **Push to your repository:**
-   Create a new, empty repository on GitHub, then link and push it:
-   ```bash
-   git branch -M main
-   git remote add origin https://github.com/your-username/your-repo-name.git
-   git push -u origin main
-   ```
